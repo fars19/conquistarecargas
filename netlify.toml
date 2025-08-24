@@ -1,0 +1,32 @@
+[build]
+  # El comando que Netlify ejecutará para instalar las dependencias de tu función de backend.
+  # Asegura que 'express', 'mysql2', 'cors', 'serverless-http' y otros estén listos.
+  command = "npm install --prefix netlify/functions/garena-backend"
+  
+  # La carpeta donde se encuentra tu archivo 'index.html' y todos los archivos de tu frontend.
+  # Netlify publicará el contenido de esta carpeta como tu sitio web principal.
+  publish = "frontend"
+
+[functions]
+  # El directorio donde Netlify buscará tus funciones (tu carpeta 'netlify/functions').
+  # Dentro de esta, Netlify encontrará tu 'garena-backend' con el 'server.js'.
+  directory = "netlify/functions"
+  
+  # Un "bundler" (empaquetador) recomendado para que tus funciones se construyan más rápido.
+  node_bundler = "esbuild"
+  
+  # Esta lista le dice a Netlify qué módulos externos debe empaquetar con tu función.
+  # Es importante incluir todos los paquetes que tu 'server.js' usa.
+  external_node_modules = ["mysql2", "express", "cors", "serverless-http"]
+
+# Esta sección es crucial para que tu frontend (la página) pueda "hablar" con tu backend (la función).
+# Le dice a Netlify que cualquier solicitud a '/api/*' debe ser redirigida internamente
+# a tu función 'garena-backend'.
+[[redirects]]
+  # Todas las rutas que comiencen con /api/ (ej. /api/register)
+  from = "/api/*"
+  # Serán redirigidas a tu función que está en / .netlify/functions/garena-backend
+  # y :splat asegura que el resto de la ruta (ej. /register) se mantenga.
+  to = "/.netlify/functions/garena-backend/:splat"
+  # El estado 200 significa que el navegador verá una respuesta normal.
+  status = 200

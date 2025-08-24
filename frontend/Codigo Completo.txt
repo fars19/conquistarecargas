@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garena Pagostore - Replicado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121526;
+            color: #E5E7EB;
+        }
+        .text-promotion {
+            color: #FF6B81;
+        }
+        .bg-card-dark {
+            background-color: #1E2335;
+        }
+        .btn-game-select.active {
+            box-shadow: 0 0 0 3px #E5E7EB, 0 0 0 5px #FF6B81;
+        }
+        .btn-tab.active {
+            background-color: #3B4052;
+            color: #E5E7EB;
+        }
+        .input-glow:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #E5E7EB, 0 0 0 4px #FF6B81;
+        }
+        .garena-logo-text {
+            color: #FF3850;
+        }
+        .divider {
+            height: 1.5rem;
+            width: 1px;
+            background-color: #555866;
+            margin: 0 0.5rem;
+        }
+        .payment-card {
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .payment-card.active {
+            border: 2px solid #FF3850;
+        }
+        .promo-ribbon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #FF3850;
+            color: #FFFFFF;
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 0.1rem 0.3rem;
+            border-bottom-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+        .popular-ribbon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #FFC000;
+            color: #2D3748;
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 0.1rem 0.3rem;
+            border-top-right-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+        }
+        .nequi-promo-ribbon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #FF3850;
+            color: #FFFFFF;
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 0.1rem 0.3rem;
+            border-top-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+        .nequi-popular-ribbon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #FFC000;
+            color: #2D3748;
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 0.1rem 0.3rem;
+            border-top-right-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+        }
+        .payment-card-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+        @media (min-width: 640px) {
+            .payment-card-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        .purchase-summary-container {
+            background-color: #1E2335;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        /* NEW STYLES FOR V2 */
+        .summary-info {
+            display: flex;
+            flex-direction: column; /* Stack vertically */
+            gap: 0.25rem;
+        }
+        .summary-line {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* NEW STYLE TO HIDE SCROLLBAR */
+        .recharge-amounts-grid-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for Firefox */
+        .recharge-amounts-grid-container {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Main container with a dark background and centered content -->
+    <div class="min-h-screen p-4 flex flex-col items-center">
+        <!-- Header Section - Adjusted to match the user's new image -->
+        <header class="w-full max-w-3xl flex justify-between items-center mb-6">
+            <!-- Left section: Logo and text -->
+            <div class="flex items-center">
+                <div class="flex items-center space-x-1">
+                    <img src="https://play-lh.googleusercontent.com/6xV7JiZFHGzPdlmTGp9kFu7U13SDNOp36PfXN2ZN1QV0Ralz5X-ZMHntqaogfVKPv1U" alt="Garena Logo" class="h-9">
+                    <span class="garena-logo-text font-bold text-xl">Conquista-Privado</span>
+                </div>
+                <div class="divider"></div>
+                <span class="text-sm font-semibold text-gray-400">Centro Oficial de Recargas</span>
+            </div>
+            <!-- Right section: Country selector and user icon -->
+            <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-1 p-2 rounded-full bg-card-dark text-xs cursor-pointer hover:bg-gray-800">
+                    <span>🇨🇴</span>
+                    <span>Colombia ES</span>
+                </div>
+                <div class="p-3 w-8 h-8 rounded-full bg-gray-500 cursor-pointer"></div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="w-full max-w-3xl space-y-8">
+            <!-- Banners Section -->
+            <section>
+                <div class="bg-card-dark rounded-xl overflow-hidden relative">
+                    <div id="banner-carousel" class="flex transition-transform duration-500 ease-in-out">
+                        <!-- Banner 1: Image provided by the user -->
+                        <img src="baner1.png" alt="Banner 1" class="w-full flex-shrink-0 rounded-xl">
+                        <!-- Banner 2: Placeholder for another image -->
+                        <img src="baner2.png" alt="Banner 2" class="w-full flex-shrink-0 rounded-xl">
+                        <!-- Banner 3: Placeholder for another image -->
+                        <img src="baner3.png" alt="Banner 2" class="w-full flex-shrink-0 rounded-xl">
+                    </div>
+                    <button class="absolute top-1/2 left-4 transform -translate-y-1/2 text-xl bg-white/20 p-2 rounded-full text-white cursor-pointer" onclick="prevBanner()">‹</button>
+                    <button class="absolute top-1/2 right-4 transform -translate-y-1/2 text-xl bg-white/20 p-2 rounded-full text-white cursor-pointer" onclick="nextBanner()">›</button>
+                </div>
+            </section>
+            
+            <!-- Game Selection Section -->
+            <section>
+                <div class="bg-card-dark p-6 rounded-xl">
+                    <h2 class="text-lg font-bold mb-4">Selección de juego</h2>
+                    <div id="game-selection" class="flex flex-wrap gap-4 justify-center">
+                        <!-- Game cards will be dynamically added here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Special Events and Offers Section - MOVED TO TOP -->
+            <section id="special-events" class="space-y-8">
+                <div class="bg-card-dark p-6 rounded-xl">
+                    <h2 class="text-lg font-bold mb-4">Eventos especiales</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <img src="https://placehold.co/400x150/2B3045/FFFFFF?text=Ruleta+de+la+Suerte" alt="Evento Ruleta" class="rounded-lg w-full">
+                        <img src="https://placehold.co/400x150/2B3045/FFFFFF?text=¡BONUS+DE+RECARGA!" alt="Evento Bonus" class="rounded-lg w-full">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recharge/Login Section -->
+            <section id="recharge-section" class="space-y-8">
+                <!-- User Login/ID Section -->
+                <div class="bg-card-dark p-6 rounded-xl">
+                    <h3 class="text-lg font-bold mb-2 text-promotion">1 Ingresar</h3>
+                    <div class="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0 items-end">
+                        <div class="flex-1 w-full">
+                            <label for="player-id" class="text-sm text-gray-400">ID de jugador</label>
+                            <input type="text" id="player-id" placeholder="Introduce el ID del jugador aquí." class="w-full p-2 mt-1 rounded-md bg-[#2B3045] text-gray-200 input-glow">
+                        </div>
+                        <button class="bg-[#FF6B81] text-white font-semibold py-2 px-6 rounded-md w-full md:w-auto hover:bg-[#E85A6F]">Iniciar sesión</button>
+                    </div>
+                    <div class="flex items-center justify-center mt-4">
+                        <span class="text-sm text-gray-400">O ingresa con una cuenta</span>
+                        <div class="flex space-x-2 ml-4">
+                            <button class="w-10 h-10 flex items-center justify-center bg-[#4267B2] text-white text-xl rounded-full">f</button>
+                            <button class="w-10 h-10 flex items-center justify-center bg-white text-2xl rounded-full">G</button>
+                            <button class="w-10 h-10 flex items-center justify-center bg-[#00A1F0] text-white text-lg rounded-full">X</button>
+                            <button class="w-10 h-10 flex items-center justify-center bg-[#5181B8] text-white text-lg rounded-full">VK</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recharge Amount Section -->
+                <div class="bg-card-dark p-6 rounded-xl">
+                    <h3 class="text-lg font-bold mb-2 text-promotion">2 Monto de recarga</h3>
+                    <div class="flex space-x-4 mb-4">
+                        <button class="btn-tab active px-4 py-2 rounded-md font-semibold">Compra</button>
+                        <button class="btn-tab px-4 py-2 rounded-md font-semibold text-gray-400">Canjear Código</button>
+                    </div>
+                    <!-- The new grid structure for recharge amounts -->
+                    <div id="recharge-amounts-container" class="flex flex-row overflow-x-scroll gap-4 py-2 recharge-amounts-grid-container">
+                        <!-- Items will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- Special Offers Section - Moved here -->
+                <div class="bg-card-dark p-6 rounded-xl">
+                    <h3 class="text-lg font-bold mb-2 text-promotion">Ofertas especiales</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="flex flex-col items-center">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Tarjeta+Semanal" alt="Oferta 1" class="rounded-lg mb-2">
+                            <span class="text-center text-sm">Tarjeta Semanal</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Tarjeta+Mensual" alt="Oferta 2" class="rounded-lg mb-2">
+                            <span class="text-center text-sm">Tarjeta Mensual</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Mochila" alt="Oferta 3" class="rounded-lg mb-2">
+                            <span class="text-center text-sm">Mochila</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Hamburguesa" alt="Oferta 4" class="rounded-lg mb-2">
+                            <span class="text-center text-sm">Grrrranada</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Booyah+Pass" alt="Booyah Pass" class="rounded-lg mb-2">
+                            <span class="text-center text-sm">Tarjeta PB</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Botin+hamburguesa" alt="Botin de hamburguesa" class="rounded-lg mb-2">
+                            <span class="text-center text-sm">Botín de hamburguesa</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Mochila+Sub" alt="Mochila de Sub" class="rounded-lg mb-2">
+                            <span class="text-center text-sm">Mochila de Sub</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Pared+Gloo" alt="Pared Gloo" class="rounded-lg mb-2">
+                            <span class="text-center text-sm">Pared Gloo Exclusiva</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Semanal+Basica" alt="Semanal Básica" class="rounded-lg mb-2">
+                            <span class="text-center text-sm">Semanal Básica</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Methods Section -->
+                <div class="bg-card-dark p-6 rounded-xl">
+                    <h3 class="text-lg font-bold mb-2 text-promotion">3 Método de pago</h3>
+                    <div id="payment-methods" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 payment-card-grid">
+                        <!-- Payment method cards will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- Purchase Summary Section - This section will be hidden by default -->
+                <div id="purchase-summary" class="purchase-summary-container hidden">
+                    <!-- Summary Info container -->
+                    <div class="summary-info">
+                        <!-- Diamond line -->
+                        <div class="summary-line">
+                            <img src="https://placehold.co/24x24/1E2335/FFFFFF?text=💎" alt="Diamante icon" class="w-6 h-6">
+                            <span id="final-diamonds" class="text-lg font-semibold">2.180 + 218</span>
+                        </div>
+                        <!-- Price line -->
+                        <div class="summary-line">
+                            <span class="text-sm text-gray-400">Total:</span>
+                            <span id="final-price" class="text-lg font-bold text-promotion">COP$ 76.800</span>
+                        </div>
+                    </div>
+                    <!-- The button is now a direct sibling, allowing for space-between justification -->
+                    <button id="buy-now-button" class="bg-[#FF3850] text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-[#E85A6F] transition-colors">
+                        <span class="hidden md:inline">Comprar ahora</span>
+                        <span class="md:hidden">Comprar</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer Section -->
+        <footer class="w-full max-w-7xl mt-12 py-4 text-center text-gray-400 text-xs flex justify-between flex-wrap">
+            <span>© Garena en línea. Todos los derechos reservados.</span>
+            <div class="flex space-x-4 flex-wrap">
+                <a href="#" class="hover:underline">Preguntas</a>
+                <a href="#" class="hover:underline">Centro de ayuda</a>
+                <a href="#" class="hover:underline">Términos y condiciones</a>
+                <a href="#" class="hover:underline">Política de privacidad</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const games = [
+            { name: 'Tiro libre', image: 'https://placehold.co/64x64/3B4052/FFFFFF?text=🔥', active: true },
+            { name: 'Fuerza Delta', image: 'https://placehold.co/64x64/3B4052/FFFFFF?text=🛡️', active: false },
+            { name: '¡HAIKYU! VUELA ALTO', image: 'https://placehold.co/64x64/3B4052/FFFFFF?text=🏐', active: false }
+        ];
+
+        // All recharge amounts in a single array
+        const rechargeAmounts = [
+            { amount: '100', currency: '💎' },
+            { amount: '310', currency: '💎' },
+            { amount: '520', currency: '💎' },
+            { amount: '1.050', currency: '💎' },
+            { amount: '1.060', currency: '💎' },
+            { amount: '2.160', currency: '💎' },
+            { amount: '2.180', currency: '💎' },
+            { amount: '5.580', currency: '💎' },
+            { amount: '5.600', currency: '💎' }
+        ];
+
+        const paymentMethods = [
+            {
+                name: 'NEQUI',
+                image: 'https://play-lh.googleusercontent.com/iniSgahzDNcS2zK-9LYYOdyNeXUF35cHCLLZo6M1ZKvDvblhPvoBPaNNYUZ5Jhc5aA',
+                promo: true,
+                popular: true,
+                price: 'COP  $76.800',
+                bonus: '218',
+                active: true, // Nequi is the active one
+                image_placeholder: 'Nequi Logo'
+            },
+            {
+                name: 'Tarjetas de crédito',
+                image: 'https://images.vexels.com/media/users/3/135738/isolated/preview/20552403208b9cf36e65d6c4062fcab8-icono-de-tarjetas-de-credito.png',
+                promo: true,
+                popular: false,
+                price: 'COP $76.800',
+                bonus: '218',
+                active: false,
+                image_placeholder: 'Tarjetas de crédito'
+            },
+            {
+                name: 'Efecty/Gana',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_4iEy7Wnn37lWiQoY5k9EVLroK6zvVKsgCPRiMkVWV2OWVxOsMIs1xXZTDErHWSqOwDw&usqp=CAU',
+                promo: true,
+                popular: false,
+                price: 'COP $76.800',
+                bonus: '218',
+                active: false,
+                image_placeholder: 'Efecty y Gana'
+            },
+            {
+                name: 'PSE y otros bancos',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEm4ZJwPOAG4ExuVKkGOjd0Y5w6X_KS-olOg&s',
+                promo: true,
+                popular: false,
+                price: 'COP $76.800',
+                bonus: '218',
+                active: false,
+                image_placeholder: 'PSE y Bancos'
+            },
+            {
+                name: 'Razer Gold',
+                image: 'https://logos-world.net/wp-content/uploads/2023/06/Western-Union-New-Logo.png',
+                promo: false,
+                popular: false,
+                price: 'COP $76.800',
+                bonus: '218',
+                active: false,
+                image_placeholder: 'Razer Gold'
+            },
+            {
+                name: 'Otros bancos',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFnGOEHtcSLfoHPNHYQG_-ULsnOj-AVveJOg&s',
+                promo: true,
+                popular: false,
+                price: 'COP $76.800',
+                bonus: '218',
+                active: false,
+                image_placeholder: 'Otros bancos'
+            }
+        ];
+
+        const gameSelectionDiv = document.getElementById('game-selection');
+        const rechargeSection = document.getElementById('recharge-section');
+        const rechargeAmountsContainer = document.getElementById('recharge-amounts-container'); // Changed from specific rows to a single container
+        const paymentMethodsDiv = document.getElementById('payment-methods');
+        const purchaseSummaryDiv = document.getElementById('purchase-summary');
+        const specialEventsSection = document.getElementById('special-events');
+
+        // Function to update the purchase summary and show/hide the button
+        function updatePurchaseSummary(item) {
+            const finalDiamondsEl = document.getElementById('final-diamonds');
+            const finalPriceEl = document.getElementById('final-price');
+
+            if (item) {
+                finalDiamondsEl.textContent = `${item.amount} + ${item.bonus}`;
+                finalPriceEl.textContent = `${item.price}`;
+                purchaseSummaryDiv.classList.remove('hidden');
+            } else {
+                purchaseSummaryDiv.classList.add('hidden');
+            }
+        }
+
+        // Dynamically create game selection cards
+        games.forEach(game => {
+            const button = document.createElement('button');
+            button.className = `btn-game-select p-4 rounded-xl flex flex-col items-center w-32 ${game.active ? 'bg-card-dark active' : 'bg-[#2B3045]'} hover:bg-card-dark transition`;
+            button.innerHTML = `
+                <img src="${game.image}" alt="${game.name} icon" class="w-16 h-16 rounded-full mb-2">
+                <span class="text-center text-sm">${game.name}</span>
+            `;
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.btn-game-select').forEach(btn => btn.classList.remove('active', 'bg-card-dark'));
+                document.querySelectorAll('.btn-game-select').forEach(btn => btn.classList.add('bg-[#2B3045]'));
+                button.classList.add('active', 'bg-card-dark');
+                rechargeSection.classList.remove('hidden');
+                specialEventsSection.classList.remove('hidden');
+                window.scrollTo({
+                    top: rechargeSection.offsetTop - 20,
+                    behavior: 'smooth'
+                });
+            });
+            gameSelectionDiv.appendChild(button);
+        });
+
+        // Dynamically create recharge amount cards in a single, horizontally scrollable row
+        rechargeAmounts.forEach(item => {
+            const button = document.createElement('button');
+            // The updated inner HTML places the diamond emoji first
+            button.className = 'flex-shrink-0 w-32 h-24 bg-[#2B3045] rounded-lg flex flex-col items-center justify-center hover:bg-card-dark transition';
+            button.innerHTML = `
+                <div class="flex items-center">
+                    <span class="text-xl">💎</span>
+                    <span class="text-lg font-bold ml-1">${item.amount}</span>
+                </div>
+            `;
+            rechargeAmountsContainer.appendChild(button);
+        });
+
+        // Dynamically create payment method cards
+        paymentMethods.forEach(method => {
+            const div = document.createElement('div');
+            // Apply a consistent base class
+            div.className = `bg-[#2B3045] rounded-lg p-4 flex items-center hover:bg-card-dark transition relative payment-card ${method.active ? 'active' : ''}`;
+            
+            // Inner HTML structure to match Nequi's card
+            div.innerHTML = `
+                ${method.promo && method.name === 'NEQUI' ? `
+                    <div class="nequi-promo-ribbon">💎 PROMOCIÓN</div>
+                    <div class="nequi-popular-ribbon">POPULAR</div>` 
+                : method.promo ? `
+                    <div class="promo-ribbon">PROMOCIÓN</div>` 
+                : ''}
+                <div class="flex-shrink-0 mr-4">
+                    <img src="${method.image}" alt="${method.image_placeholder}" class="w-16 h-16 rounded-md object-contain">
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-lg leading-tight">${method.price}</span>
+                    <span class="text-sm text-gray-400 leading-tight">+ Bonus 💎${method.bonus}</span>
+                </div>
+            `;
+
+            div.addEventListener('click', () => {
+                document.querySelectorAll('.payment-card').forEach(card => card.classList.remove('active'));
+                div.classList.add('active');
+                
+                // Show the purchase summary when Nequi is selected
+                if (method.name === 'NEQUI') {
+                    updatePurchaseSummary({
+                        amount: rechargeAmounts[6].amount, // Use the 2.180 amount
+                        bonus: '218',
+                        price: 'COP$ 76.800'
+                    });
+                } else {
+                    // Hide the summary if any other card is selected
+                    updatePurchaseSummary(null);
+                }
+            });
+            paymentMethodsDiv.appendChild(div);
+        });
+
+        // Banner carousel logic
+        let currentBanner = 0;
+        const banners = document.getElementById('banner-carousel');
+        const bannerCount = banners.children.length;
+
+        function updateBanner() {
+            banners.style.transform = `translateX(${-currentBanner * 100}%)`;
+        }
+
+        function nextBanner() {
+            currentBanner = (currentBanner + 1) % bannerCount;
+            updateBanner();
+        }
+
+        function prevBanner() {
+            currentBanner = (currentBanner - 1 + bannerCount) % bannerCount;
+            updateBanner();
+        }
+
+        // Auto-advance banner every 5 seconds
+        setInterval(nextBanner, 5000);
+
+        // Initial state: hide the purchase summary
+        purchaseSummaryDiv.classList.add('hidden');
+    </script>
+</body>
+</html>

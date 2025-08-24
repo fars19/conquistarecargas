@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conquista - 8.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos base para el cuerpo y fuentes */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121526;
+            color: #E5E7EB;
+            -webkit-font-smoothing: antialiased; /* Suaviza el renderizado de la fuente */
+            -moz-osx-font-smoothing: grayscale; /* Suaviza el renderizado de la fuente en OSX */
+        }
+        /* Color para texto de promociones */
+        .text-promotion {
+            color: #FF6B81;
+        }
+        /* Fondo para tarjetas oscuras */
+        .bg-card-dark {
+            background-color: #1E2335;
+        }
+        /* Sombra de selección para botones de juego activos */
+        .btn-game-select.active {
+            box-shadow: 0 0 0 3px #E5E7EB, 0 0 0 5px #FF6B81;
+        }
+        /* Estilo para pestañas activas */
+        .btn-tab.active {
+            background-color: #3B4052;
+            color: #E5E7EB;
+        }
+        /* Efecto de brillo para inputs al enfocar */
+        .input-glow:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #E5E7EB, 0 0 0 4px #FF6B81;
+        }
+        /* Color para el texto del logo de Garena */
+        .garena-logo-text {
+            color: #FF3850;
+        }
+        /* Divisor vertical */
+        .divider {
+            height: 1.5rem;
+            width: 1px;
+            background-color: #555866;
+            margin: 0 0.5rem;
+        }
+        /* Borde para tarjetas de pago */
+        .payment-card {
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .payment-card.active {
+            border: 2px solid #FF3850;
+        }
+        /* Ribete de promoción en la esquina superior derecha */
+        .promo-ribbon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #FF3850;
+            color: #FFFFFF;
+            font-size: 0.5rem; /* Más pequeño para móviles */
+            font-weight: 600;
+            padding: 0.1rem 0.2rem; /* Menor padding para móviles */
+            border-bottom-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+        .popular-ribbon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #FFC000;
+            color: #2D3748;
+            font-size: 0.5rem; /* Más pequeño para móviles */
+            font-weight: 600;
+            padding: 0.1rem 0.2rem; /* Menor padding para móviles */
+            border-top-right-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+        }
+        /* Ribete de promoción específico para Nequi en la esquina superior izquierda */
+        .nequi-promo-ribbon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #FF3850;
+            color: #FFFFFF;
+            font-size: 0.5rem; /* Más pequeño para móviles */
+            font-weight: 600;
+            padding: 0.1rem 0.2rem; /* Menor padding para móviles */
+            border-top-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+        /* Ribete popular específico para Nequi en la esquina superior derecha */
+        .nequi-popular-ribbon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #FFC000;
+            color: #2D3748;
+            font-size: 0.5rem; /* Más pequeño para móviles */
+            font-weight: 6-00;
+            padding: 0.1rem 0.2rem; /* Menor padding para móviles */
+            border-top-right-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+        }
+        /* Grid para las tarjetas de pago */
+        .payment-card-grid {
+            grid-template-columns: repeat(2, 1fr); /* 2 columnas en móviles por defecto */
+        }
+        /* Media query para pantallas medianas (md) y más grandes */
+        @media (min-width: 768px) {
+            .payment-card-grid {
+                grid-template-columns: repeat(3, 1fr); /* 3 columnas en md */
+            }
+            .promo-ribbon, .popular-ribbon, .nequi-promo-ribbon, .nequi-popular-ribbon {
+                font-size: 0.6rem; /* Vuelve al tamaño original en pantallas grandes */
+                padding: 0.1rem 0.3rem; /* Vuelve al padding original en pantallas grandes */
+            }
+        }
+        /* Contenedor del resumen de compra */
+        .purchase-summary-container {
+            background-color: #1E2335;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        /* Contenedor de información del resumen */
+        .summary-info {
+            display: flex;
+            flex-direction: column; /* Apila verticalmente */
+            gap: 0.25rem;
+        }
+        .summary-line {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Oculta la barra de desplazamiento para Chrome/Safari/Edge */
+        .recharge-amounts-grid-container::-webkit-scrollbar {
+            display: none;
+        }
+        /* Oculta la barra de desplazamiento para Firefox */
+        .recharge-amounts-grid-container {
+            -ms-overflow-style: none; /* IE y Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* Estilos para el spinner de carga */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #FF3850;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilos para la sección de ofertas expandible */
+        .offer-item.hidden-offer {
+            display: none;
+        }
+        /* Estilo para los botones de monto de recarga */
+        .recharge-amount-btn {
+            background-color: #2B3045;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent; /* Añadido para el efecto de borde activo */
+        }
+        .recharge-amount-btn:hover {
+            background-color: #1E2335; /* Fondo más oscuro en hover */
+            transform: scale(1.05); /* Ligeramente más grande en hover */
+        }
+        .recharge-amount-btn.active {
+            border-color: #FF3850; /* Borde rojo cuando está activo */
+            box-shadow: 0 0 0 3px rgba(255, 56, 80, 0.5); /* Sombra brillante */
+        }
+
+        /* Ajustes específicos para móviles para las tarjetas de método de pago */
+        .payment-card .flex-shrink-0 {
+            margin-right: 0.5rem; /* Ajuste del margen para móviles */
+        }
+        .payment-card img {
+            width: 2.5rem; /* 40px */
+            height: 2.5rem; /* 40px */
+        }
+        .payment-card .font-bold {
+            font-size: 0.875rem; /* text-sm (14px) en móviles */
+        }
+        .payment-card .text-gray-400 {
+            font-size: 0.75rem; /* text-xs (12px) en móviles */
+        }
+        /* Ajuste de columnas para la grilla de recarga */
+        #recharge-amounts-container {
+            grid-template-columns: repeat(2, 1fr); /* 2 columnas en móviles por defecto */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            #recharge-amounts-container {
+                grid-template-columns: repeat(3, 1fr); /* 3 columnas en md y más grandes */
+            }
+        }
+        /* Estilos para los botones de descarga */
+        .download-btn {
+            background-color: #FFC000; /* Amarillo */
+            color: #2D3748; /* Texto oscuro */
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .download-btn:hover {
+            background-color: #FFD700; /* Amarillo más claro al pasar el ratón */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        /* Nuevo estilo para botón azul */
+        .download-btn.blue {
+            background-color: #3B82F6; /* Tailwind blue-500 */
+            color: #FFFFFF;
+        }
+        .download-btn.blue:hover {
+            background-color: #2563EB; /* Tailwind blue-600 */
+        }
+        /* Nuevo estilo para botón rojo claro */
+        .download-btn.light-red {
+            background-color: #EF4444; /* Tailwind red-500 */
+            color: #FFFFFF;
+        }
+        .download-btn.light-red:hover {
+            background-color: #DC2626; /* Tailwind red-600 */
+        }
+        .download-btn svg {
+            margin-left: 0.5rem;
+        }
+        /* Separador decorativo */
+        .decorative-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #555866;
+            margin: 2rem 0;
+        }
+        .decorative-divider::before,
+        .decorative-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px dashed #555866;
+        }
+        .decorative-divider:not(:empty)::before {
+            margin-right: .5em;
+        }
+        .decorative-divider:not(:empty)::after {
+            margin-left: .5em;
+        }
+        .decorative-divider .icon {
+            font-size: 1.5rem;
+            margin: 0 0.5rem;
+            color: #FF3850;
+        }
+        /* Estilos específicos para la sección de registro (RENOVADO y optimizado para móvil) */
+        .registration-section-container {
+            background-color: #1E2335; /* Fondo de tarjeta oscuro */
+            padding: 1.5rem; /* Reducido para móvil */
+            border-radius: 1rem; /* Más redondeado */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Sombra más profunda */
+        }
+        .registration-section-container h2 {
+            font-size: 1.75rem; /* Reducido para móvil (text-3xl) */
+            font-weight: 700; /* font-bold */
+            color: #FF6B81; /* text-promotion */
+            margin-bottom: 1rem; /* Reducido para móvil */
+            text-align: center;
+            letter-spacing: 0.05em; /* Ligeramente espaciado */
+        }
+        .registration-section-container p.subtitle {
+            font-size: 0.875rem; /* text-sm para móvil */
+            color: #CBD5E0; /* text-gray-300 */
+            margin-bottom: 1.5rem; /* Reducido para móvil */
+            text-align: center;
+            line-height: 1.5; /* Ajuste de línea */
+        }
+        .registration-section-container .form-section-card {
+            background-color: #2B3045; /* Fondo ligeramente más claro para la sección */
+            padding: 1.5rem; /* Reducido para móvil */
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem; /* Espacio entre secciones */
+            border: 1px solid #3B4052; /* Borde sutil */
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2); /* Sombra interna sutil */
+        }
+        .registration-section-container .form-section-card h3 {
+            font-size: 1.25rem; /* Reducido para móvil (text-xl) */
+            font-weight: 600; /* font-semibold */
+            color: #E5E7EB; /* text-gray-100 */
+            margin-bottom: 1rem; /* Reducido para móvil */
+            display: flex;
+            align-items: center;
+        }
+        .registration-section-container .form-section-card h3 svg {
+            margin-right: 0.5rem; /* Reducido para móvil */
+            width: 20px; /* Tamaño de icono */
+            height: 20px; /* Tamaño de icono */
+            color: #63B3ED; /* Iconos con color distintivo */
+        }
+        .registration-section-container .form-group {
+            margin-bottom: 1rem; /* Reducido para móvil */
+        }
+        .registration-section-container label {
+            display: block;
+            font-size: 0.8rem; /* text-xs para móvil */
+            font-weight: 500;
+            color: #B0B0B0; /* Gris más claro */
+            margin-bottom: 0.4rem; /* Reducido para móvil */
+        }
+        .registration-section-container input[type="text"],
+        .registration-section-container input[type="password"],
+        .registration-section-container input[type="email"],
+        .registration-section-container select {
+            width: 100%;
+            padding: 0.75rem; /* Reducido para móvil */
+            border-radius: 0.4rem; /* Ligeramente menos redondeado */
+            background-color: #121526; /* Fondo más oscuro para inputs */
+            color: #E5E7EB;
+            border: 2px solid #4A5568; /* Borde más definido */
+            transition: all 0.3s ease-in-out;
+            font-size: 0.875rem; /* text-sm para inputs */
+        }
+        .registration-section-container input[type="text"]:focus,
+        .registration-section-container input[type="password"]:focus,
+        .registration-section-container input[type="email"]:focus,
+        .registration-section-container select:focus {
+            outline: none;
+            border-color: #FF6B81; /* Borde de enfoque rojo */
+            box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.3); /* Sombra de enfoque más pequeña */
+            background-color: #0A0D18; /* Ligeramente más oscuro al enfocar */
+        }
+        /* Nuevo estilo para input con error */
+        .registration-section-container input.input-error,
+        .registration-section-container select.input-error {
+            border-color: #FF3850; /* Borde rojo */
+            box-shadow: 0 0 0 3px rgba(255, 56, 80, 0.3); /* Sombra roja sutil */
+        }
+        .registration-section-container .btn-send-code {
+            background-color: #4A5568; /* Gris azulado */
+            color: #E5E7EB;
+            padding: 0.5rem 0.8rem; /* Reducido para móvil */
+            border-radius: 0.4rem; /* Ligeramente menos redondeado */
+            font-weight: 600;
+            transition: all 0.3s ease-in-out;
+            white-space: nowrap; /* Evita que el texto se rompa */
+            font-size: 0.8rem; /* Reducido para móvil */
+        }
+        .registration-section-container .btn-send-code:hover {
+            background-color: #3B4052; /* Gris más oscuro */
+            transform: translateY(-1px); /* Pequeña elevación */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra más sutil */
+        }
+        .registration-section-container .email-code-group {
+            display: flex; /* Para poner el input y el botón en línea */
+            flex-direction: column; /* Apilar en móvil por defecto */
+            align-items: stretch; /* Estirar elementos */
+            gap: 0.75rem; /* Reducido para móvil */
+        }
+        @media (min-width: 640px) { /* sm breakpoint */
+            .registration-section-container .email-code-group {
+                flex-direction: row; /* Volver a fila en pantallas más grandes */
+                align-items: flex-end;
+            }
+        }
+        .registration-section-container .email-code-group > div {
+            flex-grow: 1; /* El div que contiene el input toma el espacio restante */
+        }
+        .registration-section-container .info-text {
+            font-size: 0.75rem; /* text-xs para móvil */
+            color: #9CA3AF; /* text-gray-400 */
+            margin-top: 0.5rem; /* Reducido para móvil */
+            line-height: 1.3;
+        }
+        .registration-section-container .checkbox-label {
+            display: flex;
+            align-items: flex-start; /* Alinea arriba para texto largo */
+            font-size: 0.85rem; /* Reducido para móvil */
+            color: #CBD5E0;
+            margin-top: 1.5rem; /* Reducido para móvil */
+            cursor: pointer;
+        }
+        .registration-section-container .checkbox-label input[type="checkbox"] {
+            margin-right: 0.5rem; /* Reducido para móvil */
+            width: 1.1rem; /* Reducido para móvil */
+            height: 1.1rem; /* Reducido para móvil */
+            min-width: 1.1rem; /* Asegurar tamaño mínimo */
+            min-height: 1.1rem; /* Asegurar tamaño mínimo */
+            accent-color: #FF6B81; /* Color de acento */
+            border: 2px solid #4A5568;
+            border-radius: 0.2rem; /* Ligeramente menos redondeado */
+            cursor: pointer;
+            flex-shrink: 0; /* No permitir que se encoja */
+            margin-top: 0.15rem; /* Ajuste vertical para alineación con el texto */
+        }
+        /* Botón de REGISTRARSE mejorado */
+        .registration-section-container .btn-register {
+            background-color: #FF3850; /* Rojo vibrante */
+            color: #FFFFFF;
+            padding: 0.85rem 1.5rem; /* Reducido para móvil */
+            border-radius: 0.6rem; /* Ligeramente menos redondeado */
+            font-weight: 700;
+            font-size: 1.1rem; /* Reducido para móvil */
+            letter-spacing: 0.05em; /* Menos espaciado */
+            text-transform: uppercase; /* Mayúsculas */
+            transition: all 0.3s ease-in-out;
+            width: 100%;
+            margin-top: 2.5rem; /* Reducido para móvil */
+            box-shadow: 0 8px 18px rgba(255, 56, 80, 0.4); /* Sombra más sutil en móvil */
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden; /* Para el efecto de brillo */
+        }
+        .registration-section-container .btn-register::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.7s ease;
+        }
+        .registration-section-container .btn-register:hover {
+            background-color: #E85A6F; /* Rojo más oscuro */
+            transform: translateY(-4px) scale(1.02); /* Menor elevación y escalado */
+            box-shadow: 0 10px 20px rgba(255, 56, 80, 0.6); /* Sombra más pronunciada en hover */
+        }
+        .registration-section-container .btn-register:hover::before {
+            left: 100%;
+        }
+        /* Iconos de las secciones del formulario */
+        .form-section-card h3 svg {
+            stroke-width: 2px; /* Grosor del trazo SVG */
+            fill: none; /* No relleno por defecto */
+        }
+        .form-section-card h3.account-icon svg {
+            color: #63B3ED; /* Color azul para cuenta */
+        }
+        .form-section-card h3.security-icon svg {
+            color: #48BB78; /* Color verde para seguridad */
+        }
+        /* Estilos para el mensaje de error de contraseña */
+        .error-message {
+            color: #FF3850; /* Rojo brillante para el error */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 600; /* semi-bold */
+            text-align: center;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            animation: fadeinout 0.5s ease-in-out;
+        }
+
+        /* Estilos para mensajes de éxito */
+        .success-message {
+            color: #48BB78; /* Verde para el éxito */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 600; /* semi-bold */
+            text-align: center;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            animation: fadeinout 0.5s ease-in-out;
+        }
+
+        @keyframes fadeinout {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Contenedor principal con fondo oscuro y contenido centrado -->
+    <div class="min-h-screen p-4 flex flex-col items-center">
+        <!-- Sección de encabezado -->
+        <header class="w-full max-w-3xl flex justify-between items-start mb-6 flex-wrap">
+            <!-- Sección izquierda: Logo y texto -->
+            <div class="flex items-center md:mb-0"> 
+                <div class="flex items-center space-x-1">
+                    <img src="https://play-lh.googleusercontent.com/6xV7JiZFHGzPdlmTGp9kFu7U13SDNOp36PfXN2ZN1QV0Ralz5X-ZMHntqaogfVKPv1U" alt="Garena Logo" class="h-9 rounded-full">
+                    <!-- He ajustado el tamaño de la fuente para dispositivos móviles -->
+                    <span class="garena-logo-text font-bold text-lg md:text-xl">Conquista-Privado</span>
+                </div>
+                <!-- Este span se oculta en pantallas pequeñas y se muestra en sm: y superiores -->
+                <div class="divider hidden sm:block"></div>
+                <span class="text-sm font-semibold text-gray-400 hidden sm:block">Centro Oficial de Recargas</span>
+            </div>
+            <!-- Sección derecha: Selector de país e icono de usuario -->
+            <!-- He movido estos elementos al final del flexbox para que se alineen a la derecha -->
+            <div class="flex items-center space-x-2 ml-auto md:ml-0"> 
+                <div class="flex items-center space-x-1 p-2 rounded-full bg-card-dark text-xs cursor-pointer hover:bg-gray-800 transition-colors">
+                    <span>🇨🇴</span>
+                    <span>Colombia ES</span>
+                </div>
+                <div class="p-3 w-8 h-8 rounded-full bg-gray-500 cursor-pointer flex items-center justify-center">
+                    <!-- Icono de usuario simple -->
+                    <svg class="w-5 h-5 text-gray-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+            </div>
+        </header>
+
+        <!-- Área de contenido principal -->
+        <main class="w-full max-w-3xl space-y-8">
+            <!-- Sección de Banners -->
+            <section>
+                <div class="bg-card-dark rounded-xl overflow-hidden relative shadow-lg">
+                    <div id="banner-carousel" class="flex transition-transform duration-500 ease-in-out">
+                        <!-- Banner 1: Asegúrate de que las rutas de las imágenes sean correctas o usa placeholders -->
+                        <img src="banner.png" alt="Banner 1" class="w-full flex-shrink-0 rounded-xl object-cover">
+                        <!-- Banner 2: Placeholder para otra imagen -->
+                        <img src="banner.png" alt="Banner 2" class="w-full flex-shrink-0 rounded-xl object-cover">
+                        <!-- Banner 3: Placeholder para otra imagen -->
+                        <img src="banner.png" alt="Banner 3" class="w-full flex-shrink-0 rounded-xl object-cover">
+                    </div>
+                    <!-- Botones de navegación para el carrusel -->
+                    <button class="absolute top-1/2 left-4 transform -translate-y-1/2 text-xl bg-white/20 p-2 rounded-full text-white cursor-pointer hover:bg-white/40 transition-colors" onclick="prevBanner()">‹</button>
+                    <button class="absolute top-1/2 right-4 transform -translate-y-1/2 text-xl bg-white/20 p-2 rounded-full text-white cursor-pointer hover:bg-white/40 transition-colors" onclick="nextBanner()">›</button>
+                    <!-- Indicadores de banner -->
+                    <div id="banner-indicators" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2"></div>
+                </div>
+            </section>
+            
+            <!-- Sección de Categorías-Conquer -->
+            <section>
+                <div class="bg-card-dark p-6 rounded-xl shadow-lg">
+                    <h2 class="text-lg font-bold mb-4">Categorías-Conquer</h2>
+                    <div id="game-selection" class="flex flex-wrap gap-4 justify-center">
+                        <!-- Las tarjetas de categoría se añadirán dinámicamente aquí -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Special Events and Offers Section (Oculta por defecto al inicio) -->
+            <section id="special-events" class="space-y-8 hidden">
+                <div class="bg-card-dark p-6 rounded-xl shadow-lg">
+                    <h2 class="text-lg font-bold mb-4">Ofertas especiales</h2>
+                    <div id="offers-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <!-- Las ofertas se mostrarán aquí -->
+                        <div class="flex flex-col items-center offer-item">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Tarjeta+Semanal" alt="Oferta Tarjeta Semanal" class="rounded-lg mb-2 object-cover w-full h-auto">
+                            <span class="text-center text-sm">Tarjeta Semanal</span>
+                        </div>
+                        <div class="flex flex-col items-center offer-item">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Tarjeta+Mensual" alt="Oferta Tarjeta Mensual" class="rounded-lg mb-2 object-cover w-full h-auto">
+                            <span class="text-center text-sm">Tarjeta Mensual</span>
+                        </div>
+                        <div class="flex flex-col items-center offer-item">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Mochila" alt="Oferta Mochila" class="rounded-lg mb-2 object-cover w-full h-auto">
+                            <span class="text-center text-sm">Mochila</span>
+                        </div>
+                        <div class="flex flex-col items-center offer-item">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Hamburguesa" alt="Oferta Hamburguesa" class="rounded-lg mb-2 object-cover w-full h-auto">
+                            <span class="text-center text-sm">Grrrranada</span>
+                        </div>
+
+                        <!-- Las ofertas adicionales estarán ocultas inicialmente -->
+                        <div class="flex flex-col items-center offer-item hidden-offer">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Booyah+Pass" alt="Oferta Booyah Pass" class="rounded-lg mb-2 object-cover w-full h-auto">
+                            <span class="text-center text-sm">Tarjeta PB</span>
+                        </div>
+                        <div class="flex flex-col items-center offer-item hidden-offer">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Botin+hamburguesa" alt="Botin de hamburguesa" class="rounded-lg mb-2 object-cover w-full h-auto">
+                            <span class="text-center text-sm">Botín de hamburguesa</span>
+                        </div>
+                        <div class="flex flex-col items-center offer-item hidden-offer">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Mochila+Sub" alt="Mochila de Sub" class="rounded-lg mb-2 object-cover w-full h-auto">
+                            <span class="text-center text-sm">Mochila de Sub</span>
+                        </div>
+                        <div class="flex flex-col items-center offer-item hidden-offer">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Pared+Gloo" alt="Pared Gloo" class="rounded-lg mb-2 object-cover w-full h-auto">
+                            <span class="text-center text-sm">Pared Gloo Exclusiva</span>
+                        </div>
+                        <div class="flex flex-col items-center offer-item hidden-offer">
+                            <img src="https://placehold.co/120x120/3B4052/FFFFFF?text=Semanal+Basica" alt="Semanal Básica" class="rounded-lg mb-2 object-cover w-full h-auto">
+                            <span class="text-center text-sm">Semanal Básica</span>
+                        </div>
+                    </div>
+                    <!-- Botón para ver más/menos ofertas -->
+                    <div class="text-center mt-6">
+                        <button id="toggle-offers-btn" class="text-promotion font-semibold hover:underline flex items-center justify-center mx-auto">
+                            Ver más
+                            <svg id="toggle-offers-icon" class="w-4 h-4 ml-1 transform transition-transform duration-300 rotate-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección de Ingresar Usuario (Ahora con ID específico) -->
+            <section id="login-section" class="space-y-8 hidden">
+                <div class="bg-card-dark p-6 rounded-xl">
+                    <h3 class="text-lg font-bold mb-2 text-promotion">1 Ingresar</h3>
+                    <div class="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0 items-end">
+                        <div class="flex-1 w-full">
+                            <label for="player-id" class="text-sm text-gray-400">ID de jugador</label>
+                            <input type="text" id="player-id" placeholder="Introduce el ID del jugador aquí." class="w-full p-2 mt-1 rounded-md bg-[#2B3045] text-gray-200 input-glow transition-shadow duration-300">
+                        </div>
+                        <button class="bg-[#FF6B81] text-white font-semibold py-2 px-6 rounded-md w-full md:w-auto hover:bg-[#E85A6F] transition-colors duration-300">Iniciar sesión</button>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center justify-center mt-4 space-y-4 sm:space-y-0 sm:space-x-4">
+                        <span class="text-sm text-gray-400">O ingresa con una cuenta</span>
+                        <div class="flex space-x-2">
+                            <button class="w-10 h-10 flex items-center justify-center bg-[#4267B2] text-white text-xl rounded-full hover:scale-105 transition-transform duration-200" title="Facebook">f</button>
+                            <button class="w-10 h-10 flex items-center justify-center bg-white text-2xl rounded-full hover:scale-105 transition-transform duration-200" title="Google">G</button>
+                            <button class="w-10 h-10 flex items-center justify-center bg-[#00A1F0] text-white text-lg rounded-full hover:scale-105 transition-transform duration-200" title="X (Twitter)">X</button>
+                            <button class="w-10 h-10 flex items-center justify-center bg-[#5181B8] text-white text-lg rounded-full hover:scale-105 transition-transform duration-200" title="VK">VK</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección TIENDA-SHOP -->
+            <section id="recharge-section" class="space-y-8 hidden">
+                <div class="bg-card-dark p-6 rounded-xl">
+                    <h3 class="text-lg font-bold mb-2 text-promotion">TIENDA-SHOP</h3>
+                    <div class="flex space-x-4 mb-4">
+                        <button id="tab-cps" class="btn-tab active px-4 py-2 rounded-md font-semibold hover:bg-gray-700 transition-colors duration-300">CPS</button>
+                        <button id="tab-oro" class="btn-tab px-4 py-2 rounded-md font-semibold text-gray-400 hover:bg-gray-700 transition-colors duration-300">ORO</button>
+                    </div>
+                    <!-- The new grid structure for recharge amounts -->
+                    <div id="recharge-amounts-container" class="grid grid-cols-2 md:grid-cols-3 gap-4 py-2">
+                        <!-- Los elementos se añadirán dinámicamente aquí -->
+                    </div>
+                </div>
+
+                <!-- Payment Methods Section (Oculta por defecto, se muestra al seleccionar monto) -->
+                <div id="payment-methods" class="bg-card-dark p-6 rounded-xl hidden">
+                    <h3 class="text-lg font-bold mb-2 text-promotion">Método de pago</h3> <!-- Título cambiado -->
+                    <div id="payment-methods-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 payment-card-grid">
+                        <!-- Payment method cards will be dynamically added here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- New Downloads Section -->
+            <section id="downloads-section" class="space-y-6 hidden">
+                <div class="bg-card-dark p-6 rounded-xl shadow-lg text-center">
+                    <div class="decorative-divider">
+                        <span class="icon">💻</span>
+                        <span class="text-lg font-bold text-gray-200">DESCARGAR CLIENTE</span>
+                        <span class="icon">➡️</span>
+                    </div>
+
+                    <p class="text-sm text-gray-400 mb-4">Descarga la última versión de nuestro cliente de juego para disfrutar de la mejor experiencia.</p>
+
+                    <!-- Contenedor para los botones Mediafire y Mega, uno al lado del otro -->
+                    <div class="flex flex-wrap justify-center gap-4 mt-6">
+                        <!-- Botón "Mediafire" en azul -->
+                        <a href="#" class="download-btn blue inline-flex items-center space-x-2 text-base md:text-lg">
+                            <span>Mediafire</span>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </a>
+                        <!-- Botón "Mega" en rojo claro -->
+                        <a href="#" class="download-btn light-red inline-flex items-center space-x-2 text-base md:text-lg">
+                            <span>Mega</span>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Versión: 9866 | Tamaño: 1GB</p>
+                </div>
+            </section>
+
+            <!-- New Registration Section (Updated) -->
+            <section id="registration-section" class="space-y-6 hidden">
+                <div class="registration-section-container">
+                    <h2>REGISTRO GRATUITO</h2>
+                    <p class="subtitle">
+                        <span class="font-bold text-yellow-400">¡Atención!</span> Tu cuenta te permitirá entrar en cualquier Juego y el Foro 99.
+                    </p>
+
+                    <div class="form-section-card">
+                        <h3 class="account-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 110-6 3 3 0 010 6z"></path>
+                                <path d="M12 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0
+                                004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 110-6 3 3 0 010 6z"></path>
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M3 12a9 9 0 1018 0a9 9 0 00-18 0"></path>
+                                <path d="M12 9m-2 0a2 2 0 104 0a2 2 0 10-4 0"></path>
+                                <path d="M17.5 17a3.5 3.5 0 00-5 0"></path>
+                                <path d="M6.5 17a3.5 3.5 0 015 0"></path>
+                            </svg>
+                            Parte 1 - Cuenta & Contraseña
+                        </h3>
+                        <div class="form-group">
+                            <label for="reg-username">Nombre de Usuario:</label>
+                            <input type="text" id="reg-username" placeholder="Elige un nombre de usuario" class="input-glow">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-password">Contraseña:</label>
+                            <input type="password" id="reg-password" placeholder="Crea una contraseña segura" class="input-glow">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-repeat-password">Repite la Contraseña:</label>
+                            <input type="password" id="reg-repeat-password" placeholder="Confirma tu contraseña" class="input-glow">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">E-mail:</label>
+                            <input type="email" id="reg-email" placeholder="Introduce tu dirección de correo electrónico" class="input-glow">
+                        </div>
+                        <p class="info-text">
+                            *Tu E-mail es crucial para la identificación de tu cuenta. Asegúrate de tener acceso. Todos los asuntos de servicio se gestionarán a través de este E-mail. Puedes cambiarlo en el Centro de Atención a Cliente, pero se requerirán datos de identificación.
+                        </p>
+                    </div>
+
+                    <div class="form-section-card">
+                        <h3 class="security-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M12 3a12 12 0 008.5 3a12 12 0 01-8.5 15a12 12 0 01-8.5-15a12 12 0 008.5-3"></path>
+                                <path d="M12 11m-1 0a1 1 0 102 0a1 1 0 10-2 0"></path>
+                                <path d="M12 12v2.5"></path>
+                            </svg>
+                            Parte 2 - Información de Seguridad
+                        </h3>
+                        <p class="info-text mb-4">
+                            Esta información es confidencial y se utilizará para verificar tu identidad en caso de necesidad. No la compartas con nadie.
+                        </p>
+                        <div class="form-group">
+                            <label for="security-question">Pregunta De Seguridad:</label>
+                            <select id="security-question" class="input-glow">
+                                <option value="">Por favor selecciona una pregunta</option>
+                                <option value="pet">¿Cuál es el nombre de tu primera mascota?</option>
+                                <option value="mother">¿Cuál es el apellido de soltera de tu madre?</option>
+                                <option value="city">¿En qué ciudad naciste?</option>
+                                <option value="hero">¿Quién es tu héroe de la infancia?</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="security-answer">Respuesta:</label>
+                            <input type="text" id="security-answer" placeholder="Introduce tu respuesta secreta" class="input-glow">
+                        </div>
+                    </div>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="accept-terms">
+                        Acepto.
+                        <span class="ml-2 text-blue-400 hover:underline cursor-pointer">Al seleccionar "Acepto", usted ha aceptado el Acuerdo de Usuario de TQ Digital.</span>
+                    </label>
+
+                    <!-- Mensaje de error para la contraseña -->
+                    <div id="password-match-error" class="error-message hidden">
+                        La contraseña no coincide, corríjala.
+                    </div>
+                    <!-- Nuevo mensaje de error para los términos y condiciones -->
+                    <div id="terms-error" class="error-message hidden">
+                        Debes aceptar los términos y condiciones para registrarte.
+                    </div>
+                    <!-- Nuevo mensaje de error para campos vacíos -->
+                    <div id="empty-fields-error" class="error-message hidden">
+                        Por favor, complete todos los campos obligatorios.
+                    </div>
+                     <!-- Nuevo div para mensajes de éxito/error del servidor -->
+                    <div id="server-message" class="hidden error-message"></div>
+
+                    <button id="btn-register" class="btn-register">REGISTRARSE</button>
+                </div>
+            </section>
+
+
+            <!-- Purchase Summary Section - (Oculta por defecto, se muestra al seleccionar método de pago) -->
+            <div id="purchase-summary" class="purchase-summary-container hidden shadow-lg">
+                <!-- Contenedor de información del resumen -->
+                <div class="summary-info">
+                    <!-- Línea de cantidad: con logo y cantidad -->
+                    <div class="summary-line">
+                        <span class="text-sm text-gray-400">Cantidad:</span>
+                        <span id="final-diamonds" class="text-lg font-semibold flex items-center"></span>
+                    </div>
+                    <!-- Línea de precio -->
+                    <div class="summary-line">
+                        <span class="text-sm text-gray-400">Total:</span>
+                        <span id="final-price" class="text-lg font-bold text-promotion"></span>
+                    </div>
+                </div>
+                <!-- Botón de compra (Oculto por defecto, se muestra al seleccionar método de pago) -->
+                <button id="buy-now-button" class="bg-[#FF3850] text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-[#E85A6F] transition-colors duration-300 flex items-center justify-center space-x-2 hidden">
+                    <!-- Icono de escudo SVG -->
+                    <svg class="w-6 h-6 mr-2 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4zm-1 15L6 12.5l1.41-1.41L11 14.17l4.59-4.59L17 11.09l-6 6z"/>
+                    </svg>
+                    <div id="buy-now-text-container" class="flex"> <!-- New container for text spans -->
+                        <span id="buy-now-text" class="hidden md:inline text-xl sm:text-2xl">Comprar ahora</span>
+                        <span id="buy-now-text-mobile" class="md:hidden text-xl sm:text-2xl">Comprar</span>
+                    </div>
+                    <div id="buy-now-spinner" class="spinner hidden"></div>
+                </button>
+            </div>
+        </main>
+
+        <!-- Sección de pie de página -->
+        <footer class="w-full max-w-7xl mt-12 py-4 text-center text-gray-400 text-xs flex justify-between flex-wrap p-4">
+            <span class="mb-2 sm:mb-0">© Conquista en línea. Todos los derechos reservados.</span>
+            <div class="flex space-x-4 flex-wrap justify-center sm:justify-start">
+                <a href="#" class="hover:underline">Preguntas</a>
+                <a href="#" class="hover:underline">Centro de ayuda</a>
+                <a href="#" class="hover:underline">Términos y condiciones</a>
+                <a href="#" class="hover:underline">Política de privacidad</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Datos de categorías (anteriormente juegos)
+        const games = [ // Renomrado de 'games' a 'categories' para mayor claridad interna
+            { name: 'Acreditar', image: 'https://placehold.co/64x64/3B4052/FFFFFF?text=💸', active: false, type: 'acreditar' },
+            { name: 'Descargas', image: 'https://placehold.co/64x64/3B4052/FFFFFF?text=⬇️', active: false, type: 'descargas' },
+            { name: 'Registro', image: 'https://placehold.co/64x64/3B4052/FFFFFF?text=📝', active: false, type: 'registro' }
+        ];
+
+        // Todos los montos de recarga
+        const rechargeAmountsData = {
+            cps: [
+                { amount: '100', price: 'COP$ 3.500' },
+                { amount: '310', price: 'COP$ 10.500' },
+                { amount: '520', price: 'COP$ 18.200' },
+                { amount: '1.050', price: 'COP$ 36.750' },
+                { amount: '1.060', price: 'COP$ 37.100' },
+                { amount: '2.160', price: 'COP$ 75.600' },
+                { amount: '2.180', price: 'COP$ 76.800' },
+                { amount: '5.580', price: 'COP$ 195.300' },
+                { amount: '5.600', price: 'COP$ 196.000' }
+            ],
+            oro: [
+                { amount: '500k', price: 'COP$ 2.000' },
+                { amount: '1kk', price: 'COP$ 3.500' },
+                { amount: '5kk', price: 'COP$ 15.000' },
+                { amount: '10kk', price: 'COP$ 28.000' },
+                { amount: '20kk', price: 'COP$ 55.000' },
+                { amount: '30kk', price: 'COP$ 80.000' },
+                { amount: '50kk', price: 'COP$ 130.000' },
+                { amount: '80kk', price: 'COP$ 200.000' },
+                { amount: '100kk', price: 'COP$ 250.000' }
+            ]
+        };
+
+        // Métodos de pago
+        const paymentMethods = [
+            {
+                name: 'NEQUI',
+                image: 'https://play-lh.googleusercontent.com/iniSgahzDNcS2zK-9LYYOdyNeXUF35cHCLLZo6M1ZKvDvblhPvoBPaNNYUZ5Jhc5aA',
+                promo: true,
+                popular: true,
+                active: true, // Nequi es el activo por defecto
+                image_placeholder: 'Nequi Logo'
+            },
+            {
+                name: 'PayPal', 
+                image: 'https://cdn-icons-png.flaticon.com/512/174/174861.png',
+                promo: true, 
+                popular: false,
+                active: false,
+                image_placeholder: 'PayPal Logo'
+            },
+            {
+                name: 'Tarjetas de crédito', 
+                image: 'https://images.vexels.com/media/users/3/135738/isolated/preview/20552403208b9cf36e65d6c4062fcab8-icono-de-tarjetas-de-credito.png',
+                promo: true,
+                popular: false,
+                active: false,
+                image_placeholder: 'Tarjetas de crédito'
+            },
+            {
+                name: 'Efecty/Gana',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_4iEy7Wnn37lWiQoY5k9EVLroK6zvVKsgCPRiMkVWV2OWVxOsMIs1xXZTDErHWSqOwDw&usqp=CAU',
+                promo: true,
+                popular: false,
+                active: false,
+                image_placeholder: 'Efecty y Gana'
+            },
+            {
+                name: 'PSE y otros bancos',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEm4ZJwPOAG4ExuVKkGOjd0Yw6X_KS-olOg&s',
+                promo: true,
+                popular: false,
+                active: false,
+                image_placeholder: 'PSE y Bancos'
+            },
+            {
+                name: 'Razer Gold', // Western Union, muestra USD$
+                image: 'https://logos-world.net/wp-content/uploads/2023/06/Western-Union-New-Logo.png',
+                promo: false,
+                popular: false,
+                active: false,
+                image_placeholder: 'Razer Gold'
+            }
+        ];
+
+        // Obtener elementos del DOM
+        const gameSelectionDiv = document.getElementById('game-selection');
+        const loginSection = document.getElementById('login-section'); 
+        const rechargeSection = document.getElementById('recharge-section');
+        const paymentMethodsDiv = document.getElementById('payment-methods');
+        const purchaseSummaryDiv = document.getElementById('purchase-summary');
+        const specialEventsSection = document.getElementById('special-events');
+        const downloadsSection = document.getElementById('downloads-section'); 
+        const registrationSection = document.getElementById('registration-section'); // New registration section
+
+        const rechargeAmountsContainer = document.getElementById('recharge-amounts-container');
+        const buyNowButton = document.getElementById('buy-now-button');
+        const buyNowTextContainer = document.getElementById('buy-now-text-container');
+        const buyNowSpinner = document.getElementById('buy-now-spinner');
+        const tabCps = document.getElementById('tab-cps');
+        const tabOro = document.getElementById('tab-oro');
+        const paymentMethodsGrid = document.getElementById('payment-methods-grid');
+        const btnRegister = document.getElementById('btn-register'); // Botón de REGISTRARSE
+        const regUsername = document.getElementById('reg-username'); // Campo de nombre de usuario
+        const regPassword = document.getElementById('reg-password'); // Campo de contraseña
+        const regRepeatPassword = document.getElementById('reg-repeat-password'); // Campo de repetir contraseña
+        const regEmail = document.getElementById('reg-email'); // Campo de email
+        const securityQuestion = document.getElementById('security-question'); // Campo de pregunta de seguridad
+        const securityAnswer = document.getElementById('security-answer'); // Campo de respuesta de seguridad
+
+        const passwordMatchError = document.getElementById('password-match-error'); // Mensaje de error de contraseña
+        const acceptTermsCheckbox = document.getElementById('accept-terms'); // Checkbox de aceptar términos
+        const termsError = document.getElementById('terms-error'); // Mensaje de error de términos
+        const emptyFieldsError = document.getElementById('empty-fields-error'); // Mensaje de error de campos vacíos
+        const serverMessage = document.getElementById('server-message'); // Nuevo para mensajes del servidor
+
+        // Elementos para la sección de ofertas especiales
+        const toggleOffersBtn = document.getElementById('toggle-offers-btn');
+        const toggleOffersIcon = document.getElementById('toggle-offers-icon');
+        const hiddenOffers = document.querySelectorAll('.offer-item.hidden-offer');
+        let offersExpanded = false; 
+
+        // Variables de estado global para los elementos seleccionados
+        let currentCurrencyType = 'cps'; 
+        let currentCurrencyImage = 'cps.png'; 
+        let selectedRechargeAmount = null; 
+        let selectedPaymentMethod = null; 
+
+
+        // Tasa de conversión de COP a USD (aproximada, ajusta si es necesario)
+        const COP_TO_USD_RATE = 0.00025; // Ejemplo: 1 COP = 0.00025 USD (o 1 USD = 4000 COP)
+
+        // Función para obtener el precio formateado según el método de pago
+        function getFormattedPrice(priceString, methodName) {
+            const numericPrice = parseFloat(priceString.replace('COP$', '').replace(/\./g, '').replace(',', '.').trim());
+            
+            // Convertir a USD si el método es PayPal o Razer Gold
+            if (['PayPal', 'Razer Gold'].includes(methodName)) {
+                const usdPrice = numericPrice * COP_TO_USD_RATE;
+                return `USD$ ${usdPrice.toFixed(2)}`;
+            }
+            return priceString; // Retorna el precio original en COP para todos los demás
+        }
+
+        // Función para actualizar el resumen de compra y mostrar/ocultar el botón
+        function updatePurchaseSummary() {
+            const finalDiamondsEl = document.getElementById('final-diamonds');
+            const finalPriceEl = document.getElementById('final-price');
+
+            // Control visibility of purchaseSummaryDiv and buyNowButton based on selectedPaymentMethod
+            if (selectedPaymentMethod && selectedRechargeAmount) { // Ambas deben ser true
+                purchaseSummaryDiv.classList.remove('hidden');
+                buyNowButton.classList.remove('hidden');
+
+                // Orden corregido: primero el amount, luego la imagen de la moneda
+                finalDiamondsEl.innerHTML = `<span class="align-middle text-nowrap">${selectedRechargeAmount.amount}</span> <img src="${currentCurrencyImage}" alt="Icono Moneda" class="w-8 h-8 object-contain inline-block align-middle ml-1">`;
+                finalPriceEl.textContent = getFormattedPrice(selectedRechargeAmount.price, selectedPaymentMethod.name); 
+            } else {
+                purchaseSummaryDiv.classList.add('hidden');
+                buyNowButton.classList.add('hidden');
+            }
+        }
+
+        // Función para renderizar dinámicamente las tarjetas de método de pago
+        function renderPaymentMethods() {
+            paymentMethodsGrid.innerHTML = ''; 
+            paymentMethods.forEach(method => {
+                const div = document.createElement('div');
+                div.className = `bg-[#2B3045] rounded-lg p-3 sm:p-4 flex items-center gap-x-2 sm:gap-x-4 hover:bg-card-dark transition-all duration-300 relative payment-card transform hover:scale-105 ${selectedPaymentMethod && selectedPaymentMethod.name === method.name ? 'active' : ''}`;
+                
+                const displayPrice = selectedRechargeAmount ? getFormattedPrice(selectedRechargeAmount.price, method.name) : 'COP$ N/A';
+
+                div.innerHTML = `
+                    ${method.promo && (method.name === 'NEQUI' || method.name === 'PayPal') ? `
+                        <div class="nequi-promo-ribbon">💎 PROMOCIÓN</div>
+                        <div class="nequi-popular-ribbon">POPULAR</div>` 
+                    : method.promo ? `
+                        <div class="promo-ribbon">PROMOCIÓN</div>` 
+                    : ''}
+                    <div class="flex-shrink-0"> 
+                        <img src="${method.image}" alt="${method.image_placeholder}" class="w-8 h-8 sm:w-16 sm:h-16 rounded-md object-contain"> 
+                    </div>
+                    <div class="flex flex-col flex-grow items-start justify-center"> 
+                        <span class="font-bold text-base sm:text-xl text-white leading-tight">${displayPrice}</span> 
+                    </div>
+                `;
+
+                div.addEventListener('click', () => {
+                    document.querySelectorAll('#payment-methods-grid .payment-card').forEach(card => card.classList.remove('active')); 
+                    div.classList.add('active');
+                    selectedPaymentMethod = method; 
+                    updatePurchaseSummary(); 
+                    // Desplazarse al resumen de compra después de seleccionar el método de pago
+                    window.scrollTo({ top: purchaseSummaryDiv.offsetTop - 20, behavior: 'smooth' });
+                });
+                paymentMethodsGrid.appendChild(div); 
+            });
+        }
+
+        // Simular un proceso de compra
+        buyNowButton.addEventListener('click', () => {
+            buyNowTextContainer.classList.add('hidden'); 
+            buyNowSpinner.classList.remove('hidden'); 
+            buyNowButton.disabled = true; 
+
+            setTimeout(() => {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-card-dark p-8 rounded-lg shadow-xl text-center">
+                        <p class="text-xl font-bold text-white mb-4">¡Compra realizada con éxito! 🎉</p>
+                        <button id="modal-close-button" class="bg-[#FF3850] text-white font-bold py-2 px-4 rounded-md hover:bg-[#E85A6F] transition-colors duration-300">Cerrar</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                document.getElementById('modal-close-button').addEventListener('click', () => {
+                    modal.remove();
+                    buyNowTextContainer.classList.remove('hidden'); 
+                    buyNowSpinner.classList.add('hidden'); 
+                    buyNowButton.disabled = false; 
+                });
+
+                setTimeout(() => {
+                    if (document.body.contains(modal)) {
+                        modal.remove();
+                        buyNowTextContainer.classList.remove('hidden');
+                        buyNowSpinner.classList.add('hidden');
+                        buyNowButton.disabled = false;
+                    }
+                }, 5000); 
+                
+            }, 2000);
+        });
+
+        // Placeholder function for sending verification code (not used in current form but kept for reference)
+        function sendVerificationCode() {
+            // This function is no longer called in the current form structure,
+            // but it remains for future potential use.
+            // In a real application, this would send an email with a verification code.
+            console.log("Simulating sending verification code...");
+            // You might add a custom modal here instead of alert for better UX
+            // alert("Código de verificación enviado al correo electrónico."); 
+        }
+
+        // Crear dinámicamente las tarjetas de selección de juego (ahora categorías)
+        function renderCategories() {
+            gameSelectionDiv.innerHTML = ''; 
+            games.forEach(game => { 
+                const button = document.createElement('button');
+                button.className = `btn-game-select p-4 rounded-xl flex flex-col items-center w-32 transition-all duration-300 ${game.active ? 'bg-card-dark active' : 'bg-[#2B3045]'} hover:bg-card-dark transform hover:scale-105`;
+                button.innerHTML = `
+                    <img src="${game.image}" alt="${game.name} icon" class="w-16 h-16 rounded-full mb-2 object-cover">
+                    <span class="text-center text-sm font-medium">${game.name}</span>
+                `;
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.btn-game-select').forEach(btn => {
+                        btn.classList.remove('active', 'bg-card-dark');
+                        btn.classList.add('bg-[#2B3045]');
+                    });
+                    button.classList.add('active', 'bg-card-dark');
+
+                    // Ocultar todas las secciones de contenido antes de mostrar la correcta
+                    loginSection.classList.add('hidden');
+                    rechargeSection.classList.add('hidden');
+                    specialEventsSection.classList.add('hidden');
+                    downloadsSection.classList.add('hidden'); 
+                    registrationSection.classList.add('hidden'); // Oculta la sección de registro
+                    paymentMethodsDiv.classList.add('hidden');
+                    purchaseSummaryDiv.classList.add('hidden');
+                    buyNowButton.classList.add('hidden');
+                    // Hide all error messages when switching categories
+                    passwordMatchError.classList.add('hidden');
+                    termsError.classList.add('hidden');
+                    emptyFieldsError.classList.add('hidden');
+                    serverMessage.classList.add('hidden'); // Oculta el mensaje del servidor
+
+
+                    // Resetear la selección de monto y método de pago
+                    selectedRechargeAmount = null;
+                    selectedPaymentMethod = null;
+
+                    if (game.type === 'acreditar') {
+                        rechargeSection.classList.remove('hidden'); 
+                        tabCps.click(); // Asegura que la pestaña CPS esté activa
+                        window.scrollTo({
+                            top: rechargeSection.offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    } else if (game.type === 'descargas') { 
+                        downloadsSection.classList.remove('hidden');
+                        window.scrollTo({
+                            top: downloadsSection.offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    } else if (game.type === 'registro') { // Show registration section
+                        registrationSection.classList.remove('hidden');
+                        window.scrollTo({
+                            top: registrationSection.offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+                gameSelectionDiv.appendChild(button);
+            });
+        }
+
+        // Crear dinámicamente las tarjetas de monto de recarga
+        function renderRechargeAmounts() {
+            rechargeAmountsContainer.innerHTML = ''; 
+            const amountsToRender = rechargeAmountsData[currentCurrencyType];
+
+            // Resetear la selección del monto y ocultar pago/resumen/botón al renderizar nuevos montos
+            selectedRechargeAmount = null;
+            selectedPaymentMethod = null;
+            paymentMethodsDiv.classList.add('hidden');
+            purchaseSummaryDiv.classList.add('hidden');
+            buyNowButton.classList.add('hidden'); 
+
+            amountsToRender.forEach(item => {
+                const button = document.createElement('button');
+                button.className = 'recharge-amount-btn';
+                button.innerHTML = `
+                    <div class="flex items-center">
+                        <img src="${currentCurrencyImage}" alt="Icono Moneda" class="w-8 h-8 object-contain mr-1 sm:w-12 sm:h-12"> 
+                        <span class="font-bold text-xl ml-1 sm:text-2xl">${item.amount}</span>
+                    </div>
+                `; 
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('#recharge-amounts-container button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    selectedRechargeAmount = item; 
+                    
+                    // Mostrar los métodos de pago
+                    paymentMethodsDiv.classList.remove('hidden');
+                    
+                    // Resetear selectedPaymentMethod para que el resumen y el botón de compra se oculten hasta una nueva selección
+                    selectedPaymentMethod = null; 
+                    
+                    renderPaymentMethods(); // Renderiza métodos de pago (sin selección activa)
+                    updatePurchaseSummary(); // Oculta resumen y botón de compra
+                    // Desplazarse a la sección de método de pago después de seleccionar la cantidad
+                    window.scrollTo({ top: paymentMethodsDiv.offsetTop - 20, behavior: 'smooth' });
+                });
+                rechargeAmountsContainer.appendChild(button);
+            });
+        }
+
+        // Lógica de las pestañas CPS y ORO
+        tabCps.addEventListener('click', () => {
+            tabCps.classList.add('active', 'bg-[#3B4052]', 'text-E5E7EB');
+            tabCps.classList.remove('text-gray-400');
+            tabOro.classList.remove('active', 'bg-[#3B4052]');
+            tabOro.classList.add('text-gray-400');
+            currentCurrencyType = 'cps';
+            currentCurrencyImage = 'cps.png';
+            renderRechargeAmounts(); 
+        });
+
+        tabOro.addEventListener('click', () => {
+            tabOro.classList.add('active', 'bg-[#3B4052]', 'text-E5E7EB');
+            tabOro.classList.remove('text-gray-400');
+            tabCps.classList.remove('active', 'bg-[#3B4052]');
+            tabCps.classList.add('text-gray-400');
+            currentCurrencyType = 'oro';
+            currentCurrencyImage = 'oro.png'; 
+            renderRechargeAmounts(); 
+        });
+
+        // Lógica del carrusel de banners
+        let currentBanner = 0;
+        const banners = document.getElementById('banner-carousel');
+        const bannerCount = banners.children.length;
+        const bannerIndicatorsContainer = document.getElementById('banner-indicators');
+
+        // Crea los indicadores de banner
+        for (let i = 0; i < bannerCount; i++) {
+            const indicator = document.createElement('div');
+            indicator.classList.add('w-3', 'h-3', 'bg-gray-400', 'rounded-full', 'cursor-pointer', 'transition-colors', 'duration-300');
+            indicator.addEventListener('click', () => {
+                currentBanner = i;
+                updateBanner();
+            });
+            bannerIndicatorsContainer.appendChild(indicator);
+        }
+
+        // Actualiza la visualización del banner y los indicadores
+        function updateBanner() {
+            banners.style.transform = `translateX(${-currentBanner * 100}%)`;
+            document.querySelectorAll('#banner-indicators div').forEach((indicator, index) => {
+                if (index === currentBanner) {
+                    indicator.classList.remove('bg-gray-400');
+                    indicator.classList.add('bg-white');
+                } else {
+                    indicator.classList.remove('bg-white');
+                    indicator.classList.add('bg-gray-400');
+                }
+            });
+        }
+
+        // Avanzar al siguiente banner
+        function nextBanner() {
+            currentBanner = (currentBanner + 1) % bannerCount;
+            updateBanner();
+        }
+
+        // Retroceder al banner anterior
+        function prevBanner() {
+            currentBanner = (currentBanner - 1 + bannerCount) % bannerCount;
+            updateBanner();
+        }
+
+        // Auto-avanzar el banner cada 5 segundos
+        setInterval(nextBanner, 5000);
+
+        // Lógica para desplegar/plegar ofertas especiales
+        toggleOffersBtn.addEventListener('click', () => {
+            offersExpanded = !offersExpanded; 
+
+            hiddenOffers.forEach(offer => {
+                if (offersExpanded) {
+                    offer.style.display = 'flex'; 
+                } else {
+                    offer.style.display = 'none'; 
+                }
+            });
+
+            if (offersExpanded) {
+                toggleOffersBtn.childNodes[0].nodeValue = 'Ver menos'; 
+                toggleOffersIcon.classList.add('rotate-180'); 
+            } else {
+                toggleOffersIcon.classList.remove('rotate-180'); 
+            }
+        });
+
+        // --- Lógica de validación y envío al servidor para el formulario de registro ---
+        btnRegister.addEventListener('click', async (event) => { // Añadido 'async' aquí
+            event.preventDefault(); // Evita que el formulario se envíe por defecto
+
+            const username = regUsername.value.trim();
+            const password = regPassword.value.trim();
+            const repeatPassword = regRepeatPassword.value.trim();
+            const email = regEmail.value.trim();
+            const securityQ = securityQuestion.value; // No trim para select option value ""
+            const securityA = securityAnswer.value.trim();
+            const termsAccepted = acceptTermsCheckbox.checked;
+
+            let isValid = true;
+
+            // Ocultar todos los mensajes de error y remover clases de error al inicio de la validación
+            passwordMatchError.classList.add('hidden');
+            termsError.classList.add('hidden');
+            emptyFieldsError.classList.add('hidden');
+            serverMessage.classList.add('hidden'); // Oculta el mensaje del servidor
+            serverMessage.classList.remove('success-message', 'error-message'); // Limpia las clases
+            regPassword.classList.remove('input-error');
+            regRepeatPassword.classList.remove('input-error');
+            regUsername.classList.remove('input-error');
+            regEmail.classList.remove('input-error');
+            securityQuestion.classList.remove('input-error');
+            securityAnswer.classList.remove('input-error');
+
+
+            // 1. Validar campos vacíos
+            if (!username || !password || !repeatPassword || !email || !securityQ || !securityA) {
+                emptyFieldsError.textContent = "Por favor, complete todos los campos obligatorios.";
+                emptyFieldsError.classList.remove('hidden');
+                isValid = false;
+
+                // Marcar campos vacíos en rojo
+                if (!username) regUsername.classList.add('input-error');
+                if (!password) regPassword.classList.add('input-error');
+                if (!repeatPassword) regRepeatPassword.classList.add('input-error');
+                if (!email) regEmail.classList.add('input-error');
+                if (!securityQ) securityQuestion.classList.add('input-error');
+                if (!securityA) securityAnswer.classList.add('input-error');
+
+                // Desplazarse al primer campo vacío
+                const firstEmptyField = [regUsername, regPassword, regRepeatPassword, regEmail, securityQuestion, securityAnswer].find(field => {
+                    if (field.type === 'select-one') {
+                        return field.value === '';
+                    }
+                    return field.value.trim() === '';
+                });
+                if (firstEmptyField) {
+                    firstEmptyField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            // 2. Validar coincidencia de contraseñas (solo si no hay campos vacíos y las contraseñas no están vacías)
+            if (password && repeatPassword && (password !== repeatPassword)) {
+                passwordMatchError.textContent = "La contraseña no coincide, corríjala.";
+                passwordMatchError.classList.remove('hidden');
+                regPassword.classList.add('input-error');
+                regRepeatPassword.classList.add('input-error');
+                isValid = false;
+                regPassword.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Desplazarse a la contraseña
+            } else if (password && repeatPassword && password === repeatPassword) {
+                 regPassword.classList.remove('input-error');
+                 regRepeatPassword.classList.remove('input-error');
+            }
+
+
+            // 3. Validar aceptación de términos
+            if (!termsAccepted) {
+                termsError.textContent = "Debes aceptar los términos y condiciones para registrarte.";
+                termsError.classList.remove('hidden');
+                isValid = false;
+                if (!isValid) { // Si ya hay un error de contraseña o campos vacíos, no sobrescribimos el scroll.
+                    acceptTermsCheckbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else {
+                 termsError.classList.add('hidden');
+            }
+
+
+            // Si todas las validaciones pasan, enviar los datos al servidor
+            if (isValid) {
+                try {
+                    // Datos a enviar al backend
+                    const registrationData = {
+                        username: username,
+                        password: password,
+                        email: email,
+                        securityQuestion: securityQ,
+                        securityAnswer: securityA
+                    };
+
+                    // Realizar la solicitud POST al servidor backend
+                    const response = await fetch('http://localhost:3000/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(registrationData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) { // Si la respuesta del servidor es exitosa (código 2xx)
+                        serverMessage.textContent = result.message;
+                        serverMessage.classList.remove('hidden', 'error-message');
+                        serverMessage.classList.add('success-message');
+                        // Opcional: limpiar el formulario después de un registro exitoso
+                        regUsername.value = '';
+                        regPassword.value = '';
+                        regRepeatPassword.value = '';
+                        regEmail.value = '';
+                        securityQuestion.value = '';
+                        securityAnswer.value = '';
+                        acceptTermsCheckbox.checked = false;
+                    } else { // Si hay un error del servidor
+                        serverMessage.textContent = result.message || 'Error desconocido al registrar usuario.';
+                        serverMessage.classList.remove('hidden', 'success-message');
+                        serverMessage.classList.add('error-message');
+                    }
+
+                } catch (error) {
+                    console.error('Error al conectar con el servidor backend:', error);
+                    serverMessage.textContent = 'No se pudo conectar con el servidor. Asegúrate de que el backend esté funcionando.';
+                    serverMessage.classList.remove('hidden', 'success-message');
+                    serverMessage.classList.add('error-message');
+                }
+            }
+        });
+
+        // Ocultar mensajes de error y remover clases de error cuando se empieza a escribir o cambiar selecciones
+        regUsername.addEventListener('input', () => { emptyFieldsError.classList.add('hidden'); serverMessage.classList.add('hidden'); regUsername.classList.remove('input-error'); });
+        regPassword.addEventListener('input', () => { 
+            passwordMatchError.classList.add('hidden'); 
+            emptyFieldsError.classList.add('hidden'); 
+            serverMessage.classList.add('hidden');
+            regPassword.classList.remove('input-error');
+            regRepeatPassword.classList.remove('input-error'); // También remueve el error del campo repetido
+        });
+        regRepeatPassword.addEventListener('input', () => { 
+            passwordMatchError.classList.add('hidden'); 
+            emptyFieldsError.classList.add('hidden'); 
+            serverMessage.classList.add('hidden');
+            regPassword.classList.remove('input-error'); // Remueve el error del campo original también
+            regRepeatPassword.classList.remove('input-error');
+        });
+        regEmail.addEventListener('input', () => { emptyFieldsError.classList.add('hidden'); serverMessage.classList.add('hidden'); regEmail.classList.remove('input-error'); });
+        securityQuestion.addEventListener('change', () => { emptyFieldsError.classList.add('hidden'); serverMessage.classList.add('hidden'); securityQuestion.classList.remove('input-error'); });
+        securityAnswer.addEventListener('input', () => { emptyFieldsError.classList.add('hidden'); serverMessage.classList.add('hidden'); securityAnswer.classList.remove('input-error'); });
+        acceptTermsCheckbox.addEventListener('change', () => {
+            termsError.classList.add('hidden');
+            serverMessage.classList.add('hidden');
+        });
+        // --- Fin de la lógica de validación y envío al servidor ---
+
+
+        // Inicializar el estado al cargar la página
+        selectedRechargeAmount = null; 
+        selectedPaymentMethod = null; 
+
+        // Ocultar las secciones al cargar la página
+        loginSection.classList.add('hidden');
+        rechargeSection.classList.add('hidden');
+        specialEventsSection.classList.add('hidden');
+        purchaseSummaryDiv.classList.add('hidden'); 
+        paymentMethodsDiv.classList.add('hidden'); 
+        buyNowButton.classList.add('hidden'); 
+        downloadsSection.classList.add('hidden'); 
+        registrationSection.classList.add('hidden'); // Ensure registration section is hidden on load
+
+        renderCategories(); 
+        updateBanner(); 
+    </script>
+</body>
+</html>

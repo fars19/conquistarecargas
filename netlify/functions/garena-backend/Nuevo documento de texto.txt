@@ -1,0 +1,111 @@
+// Importar módulos necesarios
+const express = require('express');
+const mysql = require('mysql2/promise'); // Usamos la versión con promesas para async/await
+const bcrypt = require('bcryptjs'); // Para hashear contraseñas
+const cors = require('cors'); // Para permitir solicitudes desde el frontend
+
+// Configuración de la base de datos
+// NOTA: En un entorno de producción, estas credenciales DEBERÍAN estar en variables de entorno (.env)
+// Por simplicidad para este ejemplo, las pondremos directamente.
+const dbConfig = {
+    host: '127.0.0.1',
+    user: 'localhost_3306',
+    password: '8623262c',
+    database: 'camilo',
+    port: 3306 // Puerto por defecto para MySQL
+};
+
+// Crear una aplicación Express
+const app = express();
+const port = 3000; // Elige un puerto diferente al de tu frontend (que suele ser 80 o 8080)
+
+// Middlewares
+app.use(cors()); // Permite que tu frontend haga solicitudes a este backend
+app.use(express.json()); // Permite a Express leer JSON en el cuerpo de las solicitudes
+
+// Función para inicializar la conexión a la base de datos
+async function connectDB() {
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+        console.log('Conexión a la base de datos MySQL establecida correctamente.');
+        return connection;
+    } catch (error) {
+        console.error('Error al conectar con la base de datos:', error);
+        // Puedes optar por salir de la aplicación si la conexión a la DB es crítica
+        process.exit(1); 
+    }
+}
+
+let dbConnection;
+
+// Función para crear la tabla de usuarios si no existe
+async function createUsersTable() {
+    try {
+        const createTableQuery = `
+            CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(255) NOT NULL UNIQUE,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL,
+                security_question VARCHAR(255),
+                security_answer VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `;
+        await dbConnection.execute(createTableQuery);
+        console.log('Tabla "users" verificada/creada exitosamente.');
+    } catch (error) {
+        console.error('Error al crear/verificar la tabla "users":', error);
+        process.exit(1);
+    }
+}
+
+// Ruta para el registro de usuarios
+app.post('/register', async (req, res) => {
+    // Obtener los datos del cuerpo de la solicitud (frontend)
+    const { username, password, email, securityQuestion, securityAnswer } = req.body;
+
+    // Validación básica de datos (más validación debería hacerse en el frontend también)
+    if (!username || !password || !email || !securityQuestion || !securityAnswer) {
+        return res.status(400).json({ message: 'Todos los campos obligatorios deben ser completados.' });
+    }
+
+    try {
+        // Hash de la contraseña antes de guardarla en la base de datos
+        const salt = await bcrypt.genSalt(10); // Genera un "salt" para la contraseña
+        const hashedPassword = await bcrypt.hash(password, salt); // Hashea la contraseña
+
+        // Preparar la consulta SQL para insertar el nuevo usuario
+        const insertUserQuery = `
+            INSERT INTO users (username, password, email, security_question, security_answer)
+            VALUES (?, ?, ?, ?, ?);
+        `;
+        const [result] = await dbConnection.execute(
+            insertUserQuery,
+            [username, hashedPassword, email, securityQuestion, securityAnswer]
+        );
+
+        // Enviar respuesta de éxito
+        res.status(201).json({ message: 'Usuario registrado exitosamente', userId: result.insertId });
+
+    } catch (error) {
+        console.error('Error durante el registro de usuario:', error);
+        if (error.code === 'ER_DUP_ENTRY') {
+            // Manejar error de usuario/email duplicado
+            return res.status(409).json({ message: 'El nombre de usuario o el correo electrónico ya están registrados.' });
+        }
+        res.status(500).json({ message: 'Error interno del servidor al registrar usuario.' });
+    }
+});
+
+// Iniciar el servidor
+async function startServer() {
+    dbConnection = await connectDB(); // Establecer conexión a la DB
+    await createUsersTable(); // Asegurarse de que la tabla exista
+    app.listen(port, () => {
+        console.log(`Servidor backend corriendo en http://localhost:${port}`);
+        console.log('¡Listo para recibir solicitudes de registro!');
+    });
+}
+
+startServer(); // Llamar a la función para iniciar todo
