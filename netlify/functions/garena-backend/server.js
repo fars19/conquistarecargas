@@ -18,7 +18,7 @@ console.log('🏁 server.js: Iniciando la función Netlify.');
 // Para probar LOCALMENTE, se usan los valores por defecto (después de ||).
 // Cuando se despliegue en Netlify, usará los valores de las variables de entorno de Netlify.
 const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',       // Netlify: Valor de DB_HOST. LOCAL: '127.0.0.1' (para tu máquina)
+    host: process.env.DB_HOST || '26.62.234.63',       // Netlify: Valor de DB_HOST. LOCAL: '127.0.0.1' (para tu máquina)
     user: process.env.DB_USER || 'root',       // Netlify: Valor de DB_USER. LOCAL: 'localhost_3306' (el usuario que te funcionó localmente)
     password: process.env.DB_PASSWORD || '8623262c', // Netlify: Valor de DB_PASSWORD. LOCAL: '8623262c'
     database: process.env.DB_NAME || 'camilo',       // Netlify: Valor de DB_NAME. LOCAL: 'camilo'
