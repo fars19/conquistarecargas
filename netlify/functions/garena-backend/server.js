@@ -12,13 +12,13 @@ const serverless = require('serverless-http'); // Módulo para Netlify Functions
 
 // Configuración de la base de datos
 // ¡Las credenciales se leerán de las variables de entorno de Netlify!
-// Para probar LOCALMENTE, puedes poner valores por defecto como 'localhost' y tus credenciales locales.
+// Para probar LOCALMENTE, se usan los valores por defecto (después de ||).
 // Cuando se despliegue en Netlify, usará los valores de las variables de entorno de Netlify.
 const dbConfig = {
-    host: process.env.DB_HOST || '127.0.0.1',       // Netlify: Valor de DB_HOST. Local: '127.0.0.1'
-    user: process.env.DB_USER || 'root',       // Netlify: Valor de DB_USER. Local: 'localhost_3306'
-    password: process.env.DB_PASSWORD || '8623262c', // Netlify: Valor de DB_PASSWORD. Local: '8623262c'
-    database: process.env.DB_NAME || 'camilo',   // Netlify: Valor de DB_NAME. Local: 'camilo'
+    host: process.env.DB_HOST || '127.0.0.1',       // Netlify: Valor de DB_HOST. LOCAL: '127.0.0.1' (para tu máquina)
+    user: process.env.DB_USER || 'localhost_3306',       // Netlify: Valor de DB_USER. LOCAL: 'localhost_3306' (el usuario que te funcionó localmente)
+    password: process.env.DB_PASSWORD || '8623262c', // Netlify: Valor de DB_PASSWORD. LOCAL: '8623262c'
+    database: process.env.DB_NAME || 'camilo',       // Netlify: Valor de DB_NAME. LOCAL: 'camilo'
     port: process.env.DB_PORT || 3306 // Netlify: Valor de DB_PORT o 3306 por defecto
 };
 
@@ -46,7 +46,7 @@ async function connectDB() {
     } catch (error) {
         console.error('Error al conectar con la base de datos:', error);
         // En Netlify Functions, lanzamos el error para que sea capturado.
-        throw new Error(`Database connection failed: ${error.message}`); 
+        throw new Error(`Database connection failed: ${error.message}`);    
     }
 }
 
@@ -90,7 +90,7 @@ app.post('/register', async (req, res) => {
 
     try {
         await connectDB(); // Asegura que tenemos una conexión activa
-        const plainTextPassword = password; 
+        const plainTextPassword = password;    
 
         // Preparar la consulta SQL para insertar la nueva cuenta
         const insertAccountQuery = `
