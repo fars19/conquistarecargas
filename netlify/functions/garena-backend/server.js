@@ -4,6 +4,9 @@ const mysql = require('mysql2/promise');
 const cors = require('cors');
 const serverless = require('serverless-http'); // Módulo para Netlify Functions
 
+// **NUEVO LOG DE INICIO**
+console.log('🏁 server.js: Iniciando la función Netlify.');
+
 // ATENCIÓN IMPORTANTE DE SEGURIDAD:
 // Las contraseñas se están guardando en texto plano. Esto es ALTAMENTE INSEGURO
 // y no se recomienda para entornos de producción.
@@ -22,6 +25,10 @@ const dbConfig = {
     port: process.env.DB_PORT || 3306 // Netlify: Valor de DB_PORT o 3306 por defecto
 };
 
+// **NUEVO LOG: CONFIGURACIÓN DE DB**
+console.log(`🔌 server.js: Configuración de DB - Host: ${dbConfig.host}, User: ${dbConfig.user}, Database: ${dbConfig.database}, Port: ${dbConfig.port}. (La contraseña no se muestra por seguridad)`);
+
+
 // Crear una aplicación Express
 const app = express();
 
@@ -33,18 +40,23 @@ let dbConnection;
 
 // Función para inicializar la conexión a la base de datos
 async function connectDB() {
+    // **NUEVO LOG**
+    console.log('Attempting to connect to DB. Current connection status:', !!dbConnection);
+
     // Reutilizar conexión si ya existe y está activa.
     // En Netlify Functions, las conexiones pueden persistir entre invocaciones (cold start).
     if (dbConnection && dbConnection.connection && !dbConnection.connection._closing) {
+        console.log('Reusing existing DB connection.');
         return dbConnection;
     }
     try {
+        console.log('Establishing new DB connection...');
         const connection = await mysql.createConnection(dbConfig);
-        console.log('Conexión a la base de datos MySQL establecida correctamente.');
+        console.log('✅ Conexión a la base de datos MySQL establecida correctamente.');
         dbConnection = connection; // Guarda la conexión para posible reutilización
         return connection;
     } catch (error) {
-        console.error('Error al conectar con la base de datos:', error);
+        console.error('❌ Error al conectar con la base de datos:', error);
         // En Netlify Functions, lanzamos el error para que sea capturado.
         throw new Error(`Database connection failed: ${error.message}`);    
     }
@@ -52,8 +64,10 @@ async function connectDB() {
 
 // Función para crear la tabla de cuentas (accounts) si no existe
 async function createAccountsTable() {
+    // **NUEVO LOG**
+    console.log('Attempting to create/verify accounts table.');
     try {
-        await connectDB(); // Asegúrate de que la conexión esté establecida antes de usarla
+        const connection = await connectDB(); // Asegúrate de que la conexión esté establecida antes de usarla
         const createTableQuery = `
             CREATE TABLE IF NOT EXISTS accounts (
                 Username VARCHAR(255) NOT NULL UNIQUE PRIMARY KEY,
@@ -65,10 +79,10 @@ async function createAccountsTable() {
                 /* Otros campos de tu tabla accounts pueden ir aquí si los necesitas */
             );
         `;
-        await dbConnection.execute(createTableQuery);
-        console.log('Tabla "accounts" verificada/creada exitosamente.');
+        await connection.execute(createTableQuery); // Usar la conexión devuelta por connectDB
+        console.log('👍 Tabla "accounts" verificada/creada exitosamente.');
     } catch (error) {
-        console.error('Error al crear/verificar la tabla "accounts":', error);
+        console.error('❌ Error al crear/verificar la tabla "accounts":', error);
         throw new Error(`Table creation/verification failed: ${error.message}`);
     }
 }
@@ -80,11 +94,16 @@ createAccountsTable().catch(err => console.error("Initial table setup failed:", 
 
 // Ruta para el registro de usuarios
 app.post('/register', async (req, res) => {
+    // **NUEVO LOG**
+    console.log('🚀 /register: Solicitud POST recibida.');
+    console.log('Body de la solicitud:', req.body);
+
     // Obtener los datos del cuerpo de la solicitud (frontend)
     const { username, password, email, securityQuestion, securityAnswer } = req.body;
 
     // Validación básica de datos
     if (!username || !password || !email || !securityQuestion || !securityAnswer) {
+        console.log('⚠️ /register: Campos obligatorios incompletos.');
         return res.status(400).json({ message: 'Todos los campos obligatorios deben ser completados.' });
     }
 
@@ -97,15 +116,18 @@ app.post('/register', async (req, res) => {
             INSERT INTO accounts (Username, Password, Email, Question, Answer)
             VALUES (?, ?, ?, ?, ?);
         `;
+        // **NUEVO LOG**
+        console.log('Executing INSERT query for username:', username);
         const [result] = await dbConnection.execute(
             insertAccountQuery,
             [username, plainTextPassword, email, securityQuestion, securityAnswer]
         );
-
+        // **NUEVO LOG**
+        console.log('✨ /register: Cuenta registrada exitosamente. Result:', result);
         res.status(201).json({ message: 'Cuenta registrada exitosamente (contraseña guardada en texto plano)', userId: username });
 
     } catch (error) {
-        console.error('Error durante el registro de cuenta:', error);
+        console.error('❌ Error durante el registro de cuenta:', error);
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(409).json({ message: 'El nombre de usuario o el correo electrónico ya están registrados.' });
         }
